@@ -1,0 +1,14 @@
+[package]
+name = "etree"
+version = "0.1.0"
+authors = ["thuleqaid <thuleqaid@163.com>"]
+edition = "2018"
+readme = "README.md"
+repository = "https://github.com/thuleqaid/rust-etree"
+description = "XML DOM library with XPath support"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+quick-xml = "0.19"
+regex = "1"
+eval = "0.4"
