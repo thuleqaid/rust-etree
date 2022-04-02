@@ -35,9 +35,72 @@ pub trait XPath {
     }
     /// find `path` from specified node
     fn find_at(&self, path:&str, pos:usize) -> Vec<usize> {
-        let re = Regex::new(r"/+").unwrap();
-        let newpath = re.replace_all(path, "<>$0");
-        let mut path_todo:Vec<String> = newpath.split("<>").map(|x| x.to_string()).collect();
+        let quote = vec!['\'', '"'];
+        let enclose_open = vec!['['];
+        let enclose_close = vec![']'];
+        let mut escaped = false;
+        let mut split_pos = Vec::new();
+        let mut stack1 = Vec::new();
+        let mut stack2 = Vec::new();
+        for item in path.char_indices() {
+            if escaped {
+                escaped = false;
+            } else {
+                if item.1 == '\\' {
+                    escaped = true;
+                } else {
+                    if quote.contains(&item.1) {
+                        if stack1.is_empty() {
+                            stack1.push(item.1);
+                        } else {
+                            if stack1[stack1.len()-1] == item.1 {
+                                stack1.pop();
+                            } else {
+                                stack1.push(item.1);
+                            }
+                        }
+                    } else if stack1.is_empty() {
+                        if enclose_open.contains(&item.1) {
+                            stack2.push(item.1);
+                        } else if enclose_close.contains(&item.1) {
+                            let mut p=0;
+                            while p<enclose_close.len() {
+                                if enclose_close[p] == item.1 {
+                                    break;
+                                }
+                                p+=1;
+                            }
+                            if stack2[stack2.len()-1] == enclose_open[p] {
+                                stack2.pop();
+                            } else {
+                                stack2.push(item.1);
+                            }
+                        } else if item.1 == '/' && stack2.is_empty() {
+                            if split_pos.is_empty() {
+                                split_pos.push(item.0);
+                            } else if split_pos[split_pos.len()-1] + 1 < item.0 {
+                                split_pos.push(item.0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assert!(stack1.is_empty());
+        assert!(stack2.is_empty());
+        let mut path_todo:Vec<String> = Vec::new();
+        if split_pos.is_empty() {
+            path_todo.push(path.to_string());
+        } else {
+            let mut pos1 = 0;
+            let mut posidx = 0;
+            while posidx < split_pos.len() {
+                path_todo.push(path.get(pos1..split_pos[posidx]).unwrap().to_string());
+                pos1 = split_pos[posidx];
+                posidx += 1;
+            }
+            path_todo.push(path.get(pos1..).unwrap().to_string());
+        }
         if path_todo[0] == "" || path_todo[0] == "." {
             path_todo.remove(0);
         } else if path_todo[0] == "/" {

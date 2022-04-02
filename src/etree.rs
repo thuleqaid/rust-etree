@@ -371,8 +371,9 @@ impl ETree {
         self.data.remove(pos);
     }
     #[allow(dead_code)]
-    /// clear indent
-    pub fn noindent(&mut self) {
+    /// clear indent and return old indent
+    pub fn noindent(&mut self) -> String {
+        let oldindent = format!("{}{}", self.crlf, self.indent);
         self.indent = "".to_string();
         self.crlf = "".to_string();
         for item in self.data.iter_mut() {
@@ -381,6 +382,7 @@ impl ETree {
                 item.set_text(text.trim());
             }
         }
+        oldindent
     }
     #[allow(dead_code)]
     /// format nodes according to indent

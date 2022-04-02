@@ -4,7 +4,7 @@
 ///
 /// - `namespace`: value of xmlns or xmlns:XXX
 /// - `namespace_abbrev`: none or xmlns:`XXX`
-/// - `tag`: `namespace`+`localname`
+/// - `tag`: {`namespace`}+`localname`
 /// - `name`: `namespace_abbrev` + `:` + `localname`
 /// - `localname`: tag name
 /// - `text`: text between open tag and the next open tag or close tag
@@ -90,7 +90,7 @@ impl ETreeNode {
     }
     #[allow(dead_code)]
     pub fn get_tag(&self) -> String {
-        format!("{}{}", self.ns, self.local_name)
+        format!("{{{}}}{}", self.ns, self.local_name)
     }
     #[allow(dead_code)]
     pub fn get_name(&self) -> String {
