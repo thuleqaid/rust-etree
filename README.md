@@ -42,24 +42,22 @@ fn create_xml<P:AsRef<Path>>(path:P) {
     // append a child in the first child
     let mut child4:ETreeNode = ETreeNode::new("SUBCHILD-A");
     child4.set_text("EAST");
-    let pos = tree.find("//CHILD-A"); // after inserting child3, child1_pos becomes invaild
-    tree.append_child_node(pos[0], child4);
+    let pos = tree.find("//CHILD-A").unwrap(); // after inserting child3, child1_pos becomes invaild
+    tree.append_child_node(pos, child4);
     tree.pretty("\n  ");
     tree.write_file(path).ok();
 }
 
 fn modify_xml<P:AsRef<Path>>(path_in:P, path_out:P) {
     let mut tree = ETree::parse_file(path_in);
-    let subtree_pos = tree.find("//CHILD-A");
-    assert!(subtree_pos.len() == 1);
-    let mut subtree = tree.subtree(subtree_pos[0]);
-    let subtree_child_pos = subtree.find("/SUBCHILD-A");
-    assert!(subtree_child_pos.len() == 1);
-    if let Some(node) = subtree.node_mut(subtree_child_pos[0]) {
+    let subtree_pos = tree.find("//CHILD-A").unwrap();
+    let mut subtree = tree.subtree(subtree_pos);
+    let subtree_child_pos = subtree.find("/SUBCHILD-A").unwrap();
+    if let Some(node) = subtree.node_mut(subtree_child_pos) {
         node.set_text("WEST");
     }
-    // tree.append_next_tree(subtree_pos[0], subtree.clone());
-    let parent_pos = tree.parent(subtree_pos[0]).unwrap();
+    // tree.append_next_tree(subtree_pos, subtree.clone());
+    let parent_pos = tree.parent(subtree_pos).unwrap();
     tree.append_child_tree(parent_pos, subtree);
     tree.write_file(path_out).ok();
 }

@@ -39,7 +39,7 @@
 /// For node `<context:component-scan base-package="xxx.xxx.controller"></context:component-scan>`:
 /// - `namespace`: `"http://www.springframework.org/schema/context"`
 /// - `namespace_abbrev`: `"context"`
-/// - `tag`: `"http://www.springframework.org/schema/contextcomponent-scan"`
+/// - `tag`: `"{http://www.springframework.org/schema/context}component-scan"`
 /// - `name`: `"context:component-scan"`
 /// - `localname`: `"component-scan"`
 /// - `text`: `""`
