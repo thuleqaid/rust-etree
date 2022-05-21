@@ -6,4 +6,4 @@ mod etreenode;
 mod etree;
 
 pub use self::etreenode::ETreeNode;
-pub use self::etree::ETree;
+pub use self::etree::{ETree, XPathIterator};

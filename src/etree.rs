@@ -337,7 +337,8 @@ impl ETree {
                 let (_, endidx) = tree.subtree_reindex(self.count);
                 self.count = endidx;
             }
-            tree.data[0].set_tail(&cell.get_tail());
+            let tail = cell.get_tail();
+            tree.data[0].set_tail(&tail);
             for i in 0..tree.data.len() {
                 let route = format!("{}{}", cell.get_route(), tree.data[i].get_route().get(1..).unwrap());
                 tree.data[i].set_route(&route);
@@ -345,6 +346,15 @@ impl ETree {
                 self.index.insert(tree.data[i].get_idx(), cell.get_idx() + i);
             }
             self.update_index(cell.get_idx() + tree.data.len());
+            if self.indent.len() > 0 {
+                let lines:Vec<&str> = tail.lines().collect();
+                let mut level = lines[lines.len() - 1].len() / self.indent.len();
+                if self.next(cell.get_idx()).is_none() {
+                    level += 1;
+                }
+                self.pretty_tree(cell.get_idx(), level);
+                self.data[cell.get_idx()].set_tail(&tail);
+            }
             Some(cell.get_idx())
         } else {
             None
@@ -364,7 +374,8 @@ impl ETree {
                 let (_, endidx) = tree.subtree_reindex(self.count);
                 self.count = endidx;
             }
-            tree.data[0].set_tail(&cell.get_tail());
+            let tail = cell.get_tail();
+            tree.data[0].set_tail(&tail);
             for i in 0..tree.data.len() {
                 let route = format!("{}{}", cell.get_route(), tree.data[i].get_route().get(1..).unwrap());
                 tree.data[i].set_route(&route);
@@ -372,6 +383,15 @@ impl ETree {
                 self.index.insert(tree.data[i].get_idx(), cell.get_idx() + i);
             }
             self.update_index(cell.get_idx() + tree.data.len());
+            if self.indent.len() > 0 {
+                let lines:Vec<&str> = tail.lines().collect();
+                let mut level = lines[lines.len() - 1].len() / self.indent.len();
+                if self.next(cell.get_idx()).is_none() {
+                    level += 1;
+                }
+                self.pretty_tree(cell.get_idx(), level);
+                self.data[cell.get_idx()].set_tail(&tail);
+            }
             Some(cell.get_idx())
         } else {
             None
@@ -391,7 +411,8 @@ impl ETree {
                 let (_, endidx) = tree.subtree_reindex(self.count);
                 self.count = endidx;
             }
-            tree.data[0].set_tail(&cell.get_tail());
+            let tail = cell.get_tail();
+            tree.data[0].set_tail(&tail);
             for i in 0..tree.data.len() {
                 let route = format!("{}{}", cell.get_route(), tree.data[i].get_route().get(1..).unwrap());
                 tree.data[i].set_route(&route);
@@ -399,6 +420,15 @@ impl ETree {
                 self.index.insert(tree.data[i].get_idx(), cell.get_idx() + i);
             }
             self.update_index(cell.get_idx() + tree.data.len());
+            if self.indent.len() > 0 {
+                let lines:Vec<&str> = tail.lines().collect();
+                let mut level = lines[lines.len() - 1].len() / self.indent.len();
+                if self.next(cell.get_idx()).is_none() {
+                    level += 1;
+                }
+                self.pretty_tree(cell.get_idx(), level);
+                self.data[cell.get_idx()].set_tail(&tail);
+            }
             Some(cell.get_idx())
         } else {
             None
@@ -1127,7 +1157,11 @@ impl<'a> XPathIterator<'a> {
                     let re = Regex::new(r"^(.+?)(?:\[(.+?)\])?$").unwrap();
                     if let Some(c) = re.captures(m2) {
                         let tag = c.get(1).unwrap().as_str();
-                        let mut container:Vec<usize> = container.iter().filter(|&x| self.tree.node(*x).unwrap().get_name()==tag).map(|x| *x).collect();
+                        let mut container:Vec<usize> = if tag=="*" {
+                            container.clone()
+                        } else {
+                            container.iter().filter(|&x| self.tree.node(*x).unwrap().get_name()==tag).map(|x| *x).collect()
+                        };
                         if let Some(predicate) = c.get(2) {
                             let pat1 = Regex::new(r"\band\b").unwrap();
                             let pat2 = Regex::new(r"\bor\b").unwrap();
@@ -1168,7 +1202,7 @@ impl<'a> XPathIterator<'a> {
                                     }
                                 }
                                 if !found {
-                                    break;
+                                    continue;
                                 }
                                 for param in params_func.iter() {
                                     if param.starts_with("text") {
