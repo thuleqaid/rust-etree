@@ -817,7 +817,7 @@ impl ETree {
                 } else {
                     let parent = self.parent(pos);
                     if parent.is_some() {
-                        format!("{}", self.data[parent.unwrap()].get_tail())
+                        format!("{}", self.data[parent.unwrap()].get_text().unwrap_or("".to_string()))
                     } else {
                         self.crlf.clone()
                     }
@@ -839,7 +839,7 @@ impl ETree {
                     self.data[previous].set_tail(&tail);
                 } else {
                     let parent = self.parent(previous).unwrap();
-                    let tail = self.data[parent].get_tail();
+                    let tail = self.data[parent].get_text().unwrap_or("".to_string());
                     self.data[previous].set_tail(&tail);
                 }
                 let offspring = self.descendant(pos);
