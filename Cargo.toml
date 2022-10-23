@@ -1,6 +1,6 @@
 [package]
 name = "etree"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["thuleqaid <thuleqaid@163.com>"]
 edition = "2018"
 readme = "README.md"
@@ -12,3 +12,4 @@ license = "MIT OR Apache-2.0"
 quick-xml = "0.19"
 regex = "1"
 eval = "0.4"
+nom = "7"
