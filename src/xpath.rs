@@ -183,7 +183,7 @@ fn decimal(input:&str) -> IResult<&str, &str> {
 fn name(input:&str) -> IResult<&str, &str> {
     recognize(pair(
             alt((alpha1, tag("_"), tag(":"))),
-            many0_count(alt((alphanumeric1, tag("_"), tag(":")))),
+            many0_count(alt((alphanumeric1, tag("_"), tag(":"), tag("-"), tag(".")))),
     ))(input)
 }
 
