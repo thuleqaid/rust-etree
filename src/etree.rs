@@ -914,8 +914,9 @@ impl ETree {
             self.data[children[children.len()-1]].set_tail(&tail);
         } else {
             if !(self.data[pos].get_localname().starts_with("<") && self.data[pos].get_localname().ends_with(">")) {
-                let text = format!("{}", self.data[pos].get_text().as_deref().unwrap().trim());
-                self.data[pos].set_text(&text);
+                if let Some(text) = self.data[pos].get_text().as_deref() {
+                    self.data[pos].set_text(&text.trim());
+                }
             }
         }
     }
